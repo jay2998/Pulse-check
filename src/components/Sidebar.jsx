@@ -1,9 +1,15 @@
 // Sidebar.jsx
-export default function Sidebar({ patients, activeId, onSelect, searchTerm, setSearchTerm }) {
+export default function Sidebar({ patients, activeId, onSelect, searchTerm, setSearchTerm, onClose }) {
   return (
-    <aside className="w-80 bg-white border-r border-slate-200 flex flex-col h-full shadow-xl">
+    <aside className="flex flex-col h-full bg-white">
       <div className="p-6 border-b border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">Patient Database</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-slate-800">Patient Database</h2>
+          {/* Close button visible only on mobile/tablet */}
+          <button onClick={onClose} className="lg:hidden p-2 text-slate-400 hover:text-slate-600">
+            ✕
+          </button>
+        </div>
         <div className="relative">
           <input
             type="text"
@@ -21,7 +27,10 @@ export default function Sidebar({ patients, activeId, onSelect, searchTerm, setS
           patients.map((p) => (
             <button 
               key={p.id} 
-              onClick={() => onSelect(p.id)}
+              onClick={() => {
+                onSelect(p.id);
+                if (window.innerWidth < 1024) onClose(); // Auto-close drawer on mobile selection
+              }}
               className={`w-full p-4 text-left rounded-xl transition-all border ${
                 activeId === p.id 
                   ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100' 
@@ -30,7 +39,6 @@ export default function Sidebar({ patients, activeId, onSelect, searchTerm, setS
             >
               <div className="flex justify-between items-start">
                 <span className="font-bold truncate text-sm">{p.firstName} {p.lastName}</span>
-                {/* Visual alert dot in the sidebar for critical patients */}
                 {p.status === "Critical" && (
                   <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
                 )}
@@ -43,7 +51,7 @@ export default function Sidebar({ patients, activeId, onSelect, searchTerm, setS
         ) : (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
             <span className="text-3xl mb-2">👤</span>
-            <p className="text-slate-400 text-sm italic">No patients found matching your search</p>
+            <p className="text-slate-400 text-sm italic">No patients found</p>
           </div>
         )}
       </div>
